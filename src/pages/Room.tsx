@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { FormEvent, useState } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 
 import logoImg from '../assets/images/logo.svg';
 import { Button } from '../components/Button';
@@ -16,7 +17,7 @@ type RoomParams = {
 }
 
 export function Room() {
-    const { user } = useAuth();
+    const { user, signInWithGoogle } = useAuth();
     const params = useParams<RoomParams>();
     const [newQuestion, setNewQuestion] = useState('');
     const roomId = params.id;
@@ -27,11 +28,17 @@ export function Room() {
         event.preventDefault();
 
         if (newQuestion.trim() === '') {
+            toast(
+                "É necessário que você digite algo para que a pergunta seje enviada.",
+                {
+                    duration: 3000,
+                }
+            );
             return;
         }
 
         if (!user) {
-            throw new Error('You must be logged in');  /** colocar um toast aqui */
+            throw new Error('You must be logged in');
         }
 
         const question = {
@@ -49,6 +56,10 @@ export function Room() {
         setNewQuestion('');
     }
 
+    async function handleLogin() {
+        await signInWithGoogle();
+    }
+
     async function handleLikeQuestion(questionId: string, likeId: string | undefined) {
         if (likeId) {
             await database.ref(`rooms/${roomId}/questions/${questionId}/likes/${likeId}`).remove()
@@ -61,6 +72,7 @@ export function Room() {
 
     return (
         <div id="page-room">
+            <div><Toaster /></div>
             <header>
                 <div className="content">
                     <img src={logoImg} alt="Letmeask" />
@@ -79,6 +91,7 @@ export function Room() {
                         placeholder="O que você quer perguntar?"
                         onChange={event => setNewQuestion(event.target.value)}
                         value={newQuestion}
+                        disabled={!user}
                     />
 
                     <div className="form-footer">
@@ -88,7 +101,7 @@ export function Room() {
                                 <span>{user.name}</span>
                             </div>
                         ) : (
-                            <span>Para enviar uma pegunta, <button>faça seu login</button>.</span>
+                            <span>Para enviar uma pegunta, <button onClick={() => handleLogin()}>faça seu login</button>.</span>
                         )}
                         <Button type="submit" disabled={!user}>Enviar pergunta</Button>
                     </div>
@@ -110,6 +123,7 @@ export function Room() {
                                         type="button"
                                         aria-label="Marcar como gostei"
                                         onClick={() => handleLikeQuestion(question.id, question.likeId)}
+                                        disabled={!user}
                                     >
                                         {question.likeCount > 0 && <span>{question.likeCount}</span>}
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

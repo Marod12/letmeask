@@ -21,6 +21,10 @@ export function AdminRoom() {
     const params = useParams<RoomParams>();
     const roomId = params.id;
 
+    if (!roomId) {
+        history.push('/');
+    }
+
     const { title, questions } = useRoom(roomId);
 
     async function handleEndRoom() {
@@ -35,6 +39,7 @@ export function AdminRoom() {
         if (window.confirm('Tem certeza que você deseja excluir esta pergunta?')) { /** retorna um bool */
             await database.ref(`rooms/${roomId}/questions/${questionId}`).remove();
         }
+        //fazer um modal aqui
     }
 
     async function handleCheckQuestionAsAnswered(questionId: string) {
