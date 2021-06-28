@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import cNames from 'classnames';
 
 import '../styles/question.scss';
 
@@ -9,15 +10,26 @@ type QuestionProps = {
         avatar: string;
     };
     children?: ReactNode;
+    isAnswered?: boolean;
+    isHighlighted?: boolean;
 }
 
 export function Question({
     content,
     author,
+    isAnswered = false,
+    isHighlighted = false,
     children,
 }: QuestionProps) {
     return (
-        <div className="question">
+        /** Sem classnames */
+        /** <div className={`question ${isAnswered ? 'answered' : ''} ${isHighlighted ? 'highlighted' : ''}`}> */
+        /** Sem classnames */
+        <div className={cNames(
+            'question',
+            { answered: isAnswered },
+            { highlighted: isHighlighted && !isAnswered },
+        )}>
             <p>{content}</p>
             <footer>
                 <div className="user-info">
