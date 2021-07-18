@@ -29,9 +29,9 @@ export function Room() {
 
         if (newQuestion.trim() === '') {
             toast(
-                "É necessário que você digite algo para que a pergunta seje enviada.",
+                "É necessário que você digite algo para o envio da pergunta.",
                 {
-                    duration: 3000,
+                    duration: 4000,
                 }
             );
             return;
